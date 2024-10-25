@@ -32,3 +32,20 @@ D:\сем7\CompGraphics\lab6\lab6\obj\Debug\net6.0-windows\refint\lab6.dll
 D:\сем7\CompGraphics\lab6\lab6\obj\Debug\net6.0-windows\lab6.pdb
 D:\сем7\CompGraphics\lab6\lab6\obj\Debug\net6.0-windows\lab6.genruntimeconfig.cache
 D:\сем7\CompGraphics\lab6\lab6\obj\Debug\net6.0-windows\ref\lab6.dll
+E:\comp vision\lab6\lab6\bin\Debug\net6.0-windows\lab6.exe
+E:\comp vision\lab6\lab6\bin\Debug\net6.0-windows\lab6.deps.json
+E:\comp vision\lab6\lab6\bin\Debug\net6.0-windows\lab6.runtimeconfig.json
+E:\comp vision\lab6\lab6\bin\Debug\net6.0-windows\lab6.dll
+E:\comp vision\lab6\lab6\bin\Debug\net6.0-windows\lab6.pdb
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.csproj.AssemblyReference.cache
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.Form1.resources
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.csproj.GenerateResource.cache
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.GeneratedMSBuildEditorConfig.editorconfig
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.AssemblyInfoInputs.cache
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.AssemblyInfo.cs
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.csproj.CoreCompileInputs.cache
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.dll
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\refint\lab6.dll
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.pdb
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\lab6.genruntimeconfig.cache
+E:\comp vision\lab6\lab6\obj\Debug\net6.0-windows\ref\lab6.dll

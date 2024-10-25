@@ -8,19 +8,19 @@
     "net6.0-windows7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\фвьшт\\.nuget\\packages\\": {}
+    "C:\\Users\\Анна\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\сем7\\CompGraphics\\lab6\\lab6\\lab6.csproj",
+      "projectUniqueName": "E:\\comp vision\\lab6\\lab6\\lab6.csproj",
       "projectName": "lab6",
-      "projectPath": "D:\\сем7\\CompGraphics\\lab6\\lab6\\lab6.csproj",
-      "packagesPath": "C:\\Users\\фвьшт\\.nuget\\packages\\",
-      "outputPath": "D:\\сем7\\CompGraphics\\lab6\\lab6\\obj\\",
+      "projectPath": "E:\\comp vision\\lab6\\lab6\\lab6.csproj",
+      "packagesPath": "C:\\Users\\Анна\\.nuget\\packages\\",
+      "outputPath": "E:\\comp vision\\lab6\\lab6\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\фвьшт\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Анна\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -64,7 +64,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
       }
     }
   }
