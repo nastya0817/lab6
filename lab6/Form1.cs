@@ -10,7 +10,7 @@ namespace lab6
     public partial class Form1 : Form
     {
         Polyhedron polyhedron;
-
+        private TransformationMatrix currentProjectionMatrix;
         public Form1()
         {
             InitializeComponent();
@@ -98,19 +98,62 @@ namespace lab6
                 double x = matrix[0, 0] * p.X + matrix[1, 0] * p.Y + matrix[2, 0] * p.Z + matrix[3, 0];
                 double y = matrix[0, 1] * p.X + matrix[1, 1] * p.Y + matrix[2, 1] * p.Z + matrix[3, 1];
                 double z = matrix[0, 2] * p.X + matrix[1, 2] * p.Y + matrix[2, 2] * p.Z + matrix[3, 2];
-                
+                double w = matrix[0, 3] * p.X + matrix[1, 3] * p.Y + matrix[2, 3] * p.Z + matrix[3, 3];
+
+                if (w != 0)
+                {
+                    x /= w;
+                    y /= w;
+                    z /= w;
+                }
+
                 return new Point3D(x, y, z);
+            }
+            public static TransformationMatrix PerspectiveProjection(double distance)
+            {
+                // Перспективная проекция
+                TransformationMatrix result = new TransformationMatrix();
+                //result.matrix[0, 0] = 1;
+                //result.matrix[1, 1] = 1;
+                //result.matrix[2, 2] = 1;
+                //result.matrix[2, 3] = 1 / distance; // Устанавливаем масштаб по Z
+                //result.matrix[3, 2] = -1;
+                //result.matrix[3, 3] = 0;
+
+                result.matrix[0, 0] = 1;
+                result.matrix[1, 1] = 1;
+                result.matrix[3, 2] = -1/distance;
+                result.matrix[3, 3] = 1;
+                return result;
+            }
+
+            public static TransformationMatrix AxonometricProjection(double theta, double phi)
+            {
+                // Преобразуем углы из градусов в радианы
+                double cosTheta = Math.Cos(theta * Math.PI / 180);
+                double sinTheta = Math.Sin(theta * Math.PI / 180);
+                double cosPhi = Math.Cos(phi * Math.PI / 180);
+                double sinPhi = Math.Sin(phi * Math.PI / 180);
+
+                TransformationMatrix result = new TransformationMatrix();
+                result.matrix[0, 0] = cosTheta;
+                result.matrix[0, 1] = sinTheta * sinPhi;
+                result.matrix[1, 1] = cosPhi;
+                result.matrix[2, 0] = sinTheta;
+                result.matrix[2, 1] = -cosTheta * sinPhi;
+                result.matrix[2, 2] = 0;
+                return result;
             }
 
             public static TransformationMatrix Multiply(TransformationMatrix a, TransformationMatrix b)
             {
                 TransformationMatrix result = new TransformationMatrix();
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 4; i++)
                 {
-                    for (int j = 0; j < 3; j++)
+                    for (int j = 0; j < 4; j++)
                     {
                         result.matrix[i, j] = 0;
-                        for (int k = 0; k < 3; k++)
+                        for (int k = 0; k < 4; k++)
                         {
                             result.matrix[i, j] += a.matrix[i, k] * b.matrix[k, j];
                         }
@@ -304,6 +347,8 @@ namespace lab6
                 return Multiply(Multiply(Multiply(Multiply(translateToOrigin, rotationToZAxis), rotationAroundZ), inverseRotationToZAxis), translateBack);
             }
         }
+
+
         // =========================================================================
 
         //создание икосаэдра
@@ -313,7 +358,7 @@ namespace lab6
             List<Face> faces = new List<Face>();
 
             double radius = 1.0;
-            double height = 0.5; 
+            double height = 0.5;
             double sqrt5 = Math.Sqrt(5) / 2.0;
 
             // нижняя окружность Z = -0.5
@@ -331,7 +376,7 @@ namespace lab6
                 double angle = 2 * Math.PI * (i + 0.5) / 5; // Смещаем на полуградуса
                 double x = radius * Math.Cos(angle);
                 double y = radius * Math.Sin(angle);
-                vertices.Add(new Point3D(x, y, height)); 
+                vertices.Add(new Point3D(x, y, height));
             }
 
             // Добавляем две вершины на оси Z
@@ -358,25 +403,26 @@ namespace lab6
             return new Polyhedron(vertices, faces);
         }
 
-        // проецирование через x y
-        public PointF Project(Point3D point)
+        public PointF Project(Point3D point, TransformationMatrix projectionMatrix)
         {
-            float x = (float)point.X * 100 + pictureBox1.Width / 2;  // Масштабируем и смещаем к центру
-            float y = (float)point.Y * 100 + pictureBox1.Height / 2; // Масштабируем и смещаем к центру
+            // Применяем матрицу проекции к 3D-точке
+            Point3D projectedPoint = projectionMatrix.Transform(point);
+
+            //float x = (float)projectedPoint.X/ * 100 + pictureBox1.Width / 2;
+            //float y = (float)projectedPoint.Y * 100 + pictureBox1.Height / 2;
+            float zAdjusted = Math.Max((float)projectedPoint.Z, 0.01f); // предотвращение деления на 0
+            float x = ((float)projectedPoint.X / 1) * 100 + pictureBox1.Width / 2;
+            float y = ((float)projectedPoint.Y / 1) * 100 + pictureBox1.Height / 2;
             return new PointF(x, y);
         }
 
         // проецирование через x/z y/z (вызывается в DrawPolyhedron)
-        public PointF ProjectPerspective(Point3D point)
-        {
-            float x = ((float)point.X / (float)point.Z) * 100 + pictureBox1.Width / 2;  // Масштабируем и смещаем к центру
-            float y = ((float)point.Y / (float)point.Z) * 100 + pictureBox1.Height / 2; // Масштабируем и смещаем к центру
-            return new PointF(x, y);
-        }
+     
 
-        // Отрисовка многогранника
-        private void DrawPolyhedron(Polyhedron polyhedron, Graphics g)
+
+        public void DrawPolyhedron(Polyhedron polyhedron, Graphics g, TransformationMatrix projectionMatrix)
         {
+            
             Pen pen = new Pen(Color.Black, 1);
 
             foreach (Face face in polyhedron.Faces)
@@ -386,25 +432,30 @@ namespace lab6
                     int start = face.Vertices[i];
                     int end = face.Vertices[(i + 1) % face.Vertices.Count];
 
-                    PointF p1 = Project(polyhedron.Vertices[start]);
-                    PointF p2 = Project(polyhedron.Vertices[end]);
+                    // Проецируем точки, используя переданную матрицу
+                    PointF p1 = Project(polyhedron.Vertices[start], projectionMatrix);
+                    PointF p2 = Project(polyhedron.Vertices[end], projectionMatrix);
 
+                    // Рисуем линию между проецированными точками
                     g.DrawLine(pen, p1, p2);
                 }
             }
         }
 
+
         // Обработчик события Paint для отрисовки на pictureBox1
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            DrawPolyhedron(polyhedron, e.Graphics);
+            TransformationMatrix perspectiveMatrix = TransformationMatrix.PerspectiveProjection(10);
+            TransformationMatrix axonometricMatrix = TransformationMatrix.AxonometricProjection(45, 35.26);
+            DrawPolyhedron(polyhedron, e.Graphics, perspectiveMatrix);
         }
 
 
         public static Point3D GetPolyhedronCenter(Polyhedron p)
         {
             if (p.Vertices == null || p.Vertices.Count == 0)
-                return new Point3D(0,0,0);
+                return new Point3D(0, 0, 0);
 
             double sumX = 0, sumY = 0, sumZ = 0;
 
@@ -428,9 +479,9 @@ namespace lab6
         // =========================================================================
         private bool TransformPolyhedron(TransformationMatrix transformationMatrix)
         {
-            if(polyhedron != null)
+            if (polyhedron != null)
             {
-                for(int i = 0; i < polyhedron.Vertices.Count; i++)
+                for (int i = 0; i < polyhedron.Vertices.Count; i++)
                 {
                     polyhedron.Vertices[i] = transformationMatrix.Transform(polyhedron.Vertices[i]);
                 }
@@ -497,6 +548,15 @@ namespace lab6
         {
             TransformationMatrix matrix = TransformationMatrix.CreateReflectionMatrixYZ();
             TransformPolyhedron(matrix);
+        }
+
+        // проекции
+        
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) { }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

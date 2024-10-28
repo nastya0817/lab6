@@ -30,6 +30,7 @@
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.cbFlipYZ = new System.Windows.Forms.CheckBox();
             this.cbFlipXZ = new System.Windows.Forms.CheckBox();
             this.cbFlipXY = new System.Windows.Forms.CheckBox();
@@ -67,10 +68,12 @@
             this.pictureBox1.Size = new System.Drawing.Size(864, 648);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.cbFlipYZ);
             this.panel1.Controls.Add(this.cbFlipXZ);
             this.panel1.Controls.Add(this.cbFlipXY);
@@ -100,6 +103,15 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(200, 648);
             this.panel1.TabIndex = 1;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(10, 551);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(151, 28);
+            this.comboBox1.TabIndex = 24;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // cbFlipYZ
             // 
@@ -359,5 +371,6 @@
         private CheckBox cbFlipYZ;
         private CheckBox cbFlipXZ;
         private CheckBox cbFlipXY;
+        private ComboBox comboBox1;
     }
 }
