@@ -10,6 +10,7 @@ namespace lab6
     public partial class Form1 : Form
     {
         Polyhedron polyhedron;
+        private bool IsPersp = true;
         private TransformationMatrix currentProjectionMatrix;
         public Form1()
         {
@@ -30,6 +31,11 @@ namespace lab6
             txtScaleY.KeyPress += ApplyScaling;
             txtScaleZ.KeyPress += ApplyScaling;
 
+            currentProjectionMatrix = TransformationMatrix.PerspectiveProjection(500);
+            comboBox1.Items.Add("Центральная");
+            comboBox1.Items.Add("Аксонометрическая");
+            comboBox1.SelectedItem = "Центральная"; 
+            comboBox1.SelectedIndex = 0; 
             pictureBox1.Invalidate();
         }
 
@@ -98,6 +104,16 @@ namespace lab6
                 double x = matrix[0, 0] * p.X + matrix[1, 0] * p.Y + matrix[2, 0] * p.Z + matrix[3, 0];
                 double y = matrix[0, 1] * p.X + matrix[1, 1] * p.Y + matrix[2, 1] * p.Z + matrix[3, 1];
                 double z = matrix[0, 2] * p.X + matrix[1, 2] * p.Y + matrix[2, 2] * p.Z + matrix[3, 2];
+                
+
+                return new Point3D(x, y, z);
+            }
+
+            public Point3D TransformForPerspect(Point3D p)
+            {
+                double x = matrix[0, 0] * p.X + matrix[1, 0] * p.Y + matrix[2, 0] * p.Z + matrix[3, 0];
+                double y = matrix[0, 1] * p.X + matrix[1, 1] * p.Y + matrix[2, 1] * p.Z + matrix[3, 1];
+                double z = matrix[0, 2] * p.X + matrix[1, 2] * p.Y + matrix[2, 2] * p.Z + matrix[3, 2];
                 double w = matrix[0, 3] * p.X + matrix[1, 3] * p.Y + matrix[2, 3] * p.Z + matrix[3, 3];
 
                 if (w != 0)
@@ -122,14 +138,15 @@ namespace lab6
 
                 result.matrix[0, 0] = 1;
                 result.matrix[1, 1] = 1;
-                result.matrix[3, 2] = -1/distance;
+                result.matrix[2,2] = 0;
+                result.matrix[2,3] = -1/distance;
                 result.matrix[3, 3] = 1;
                 return result;
             }
 
             public static TransformationMatrix AxonometricProjection(double theta, double phi)
             {
-                // Преобразуем углы из градусов в радианы
+                
                 double cosTheta = Math.Cos(theta * Math.PI / 180);
                 double sinTheta = Math.Sin(theta * Math.PI / 180);
                 double cosPhi = Math.Cos(phi * Math.PI / 180);
@@ -141,7 +158,8 @@ namespace lab6
                 result.matrix[1, 1] = cosPhi;
                 result.matrix[2, 0] = sinTheta;
                 result.matrix[2, 1] = -cosTheta * sinPhi;
-                result.matrix[2, 2] = 0;
+                result.matrix[3, 3] = 1;
+                result.matrix[2,2] = 0;
                 return result;
             }
 
@@ -405,19 +423,97 @@ namespace lab6
 
         public PointF Project(Point3D point, TransformationMatrix projectionMatrix)
         {
-            // Применяем матрицу проекции к 3D-точке
-            Point3D projectedPoint = projectionMatrix.Transform(point);
+            
 
-            //float x = (float)projectedPoint.X/ * 100 + pictureBox1.Width / 2;
-            //float y = (float)projectedPoint.Y * 100 + pictureBox1.Height / 2;
-            float zAdjusted = Math.Max((float)projectedPoint.Z, 0.01f); // предотвращение деления на 0
-            float x = ((float)projectedPoint.X / 1) * 100 + pictureBox1.Width / 2;
-            float y = ((float)projectedPoint.Y / 1) * 100 + pictureBox1.Height / 2;
-            return new PointF(x, y);
+            if (!IsPersp)
+            {
+
+                Point3D projectedPoint = projectionMatrix.Transform(point);
+                
+                float x = ((float)projectedPoint.X / 1) * 100 + pictureBox1.Width / 2;
+                float y = ((float)projectedPoint.Y / 1) * 100 + pictureBox1.Height / 2;
+                return new PointF(x, y);
+            }
+            else
+            {
+                Point3D projectedPoint = projectionMatrix.TransformForPerspect(point);
+                
+                float x = ((float)projectedPoint.X) * 100 + pictureBox1.Width / 2;
+                float y = ((float)projectedPoint.Y) * 100 + pictureBox1.Height / 2;
+                return new PointF(x, y);
+            }
         }
+        //public PointF Project(Point3D point, TransformationMatrix projectionMatrix)
+        //{
 
-        // проецирование через x/z y/z (вызывается в DrawPolyhedron)
-     
+        //    Point3D projectedPoint = projectionMatrix.Transform(point);
+        //    float zAdjusted = Math.Max((float)projectedPoint.Z, 0.01f); // предотвращение деления на 0
+        //    float x = ((float)projectedPoint.X / 1) ;
+        //    float y = ((float)projectedPoint.Y / 1) ;
+        //    return new PointF(x, y);
+            
+
+        //}
+
+        //// проецирование через x/z y/z (вызывается в DrawPolyhedron)
+        //public Polyhedron CreateIcosahedron()
+        //{
+        //    List<Point3D> vertices = new List<Point3D>();
+        //    List<Face> faces = new List<Face>();
+
+        //    double radius = 100.0;  // Увеличиваем радиус, чтобы икосаэдр был крупнее
+        //    double height = radius / 2.0;
+        //    double sqrt5 = Math.Sqrt(5) / 2.0 * radius;
+
+        //    // нижняя окружность Z = -height
+        //    for (int i = 0; i < 5; i++)
+        //    {
+        //        double angle = 2 * Math.PI * i / 5;
+        //        double x = radius * Math.Cos(angle);
+        //        double y = radius * Math.Sin(angle);
+        //        vertices.Add(new Point3D(x, y, -height));
+        //    }
+
+        //    // верхняя окружность Z = +height
+        //    for (int i = 0; i < 5; i++)
+        //    {
+        //        double angle = 2 * Math.PI * (i + 0.5) / 5; // Смещаем на полуградуса
+        //        double x = radius * Math.Cos(angle);
+        //        double y = radius * Math.Sin(angle);
+        //        vertices.Add(new Point3D(x, y, height));
+        //    }
+
+        //    // Добавляем две вершины на оси Z
+        //    vertices.Add(new Point3D(0, 0, sqrt5));  // Верхняя вершина Z = sqrt(5)/2 * radius
+        //    vertices.Add(new Point3D(0, 0, -sqrt5)); // Нижняя вершина Z = -sqrt(5)/2 * radius
+
+        //    // Создаем грани
+        //    for (int i = 0; i < 5; i++)
+        //    {
+        //        int next = (i + 1) % 5;
+
+        //        // Соединяем нижний и верхний пояс
+        //        faces.Add(new Face(new List<int> { i, next, i + 5 }));
+        //        faces.Add(new Face(new List<int> { next, next + 5, i + 5 }));
+        //    }
+
+        //    // Соединяем верхнюю и нижнюю вершины с поясом
+        //    for (int i = 0; i < 5; i++)
+        //    {
+        //        faces.Add(new Face(new List<int> { 10, i + 5, (i + 1) % 5 + 5 })); // Верхняя вершина с верхним поясом
+        //        faces.Add(new Face(new List<int> { 11, i, (i + 1) % 5 }));          // Нижняя вершина с нижним поясом
+        //    }
+
+        //    // Центрирование координат
+        //    double offsetX = pictureBox1.Width / 2;
+        //    double offsetY = pictureBox1.Height / 2;
+        //    for (int i = 0; i < vertices.Count; i++)
+        //    {
+        //        vertices[i] = new Point3D(vertices[i].X + offsetX, vertices[i].Y + offsetY, vertices[i].Z);
+        //    }
+
+        //    return new Polyhedron(vertices, faces);
+        //}
 
 
         public void DrawPolyhedron(Polyhedron polyhedron, Graphics g, TransformationMatrix projectionMatrix)
@@ -446,9 +542,8 @@ namespace lab6
         // Обработчик события Paint для отрисовки на pictureBox1
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            TransformationMatrix perspectiveMatrix = TransformationMatrix.PerspectiveProjection(10);
-            TransformationMatrix axonometricMatrix = TransformationMatrix.AxonometricProjection(45, 35.26);
-            DrawPolyhedron(polyhedron, e.Graphics, perspectiveMatrix);
+            
+            DrawPolyhedron(polyhedron, e.Graphics, currentProjectionMatrix);
         }
 
 
@@ -552,11 +647,21 @@ namespace lab6
 
         // проекции
         
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) { }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) 
         {
-
+            
+            switch (comboBox1.SelectedItem.ToString())
+            {
+                case "Центральная":
+                    currentProjectionMatrix = TransformationMatrix.PerspectiveProjection(500);
+                    IsPersp = true;
+                    break;
+                case "Аксонометрическая":
+                    currentProjectionMatrix = TransformationMatrix.AxonometricProjection(45, 30);
+                    IsPersp = false;
+                    break;
+            }
+            pictureBox1.Invalidate();
         }
     }
 }
