@@ -10,12 +10,13 @@ namespace lab6
     public partial class Form1 : Form
     {
         Polyhedron polyhedron;
+        int del = 50;
         private bool IsPersp = true;
         private TransformationMatrix currentProjectionMatrix;
         public Form1()
         {
             InitializeComponent();
-            polyhedron = CreateIcosahedron();
+            polyhedron = CreateDodecahedr();
 
             pictureBox1.Paint += new PaintEventHandler(pictureBox1_Paint);
 
@@ -31,7 +32,8 @@ namespace lab6
             txtScaleY.KeyPress += ApplyScaling;
             txtScaleZ.KeyPress += ApplyScaling;
 
-            currentProjectionMatrix = TransformationMatrix.PerspectiveProjection(500);
+            
+            currentProjectionMatrix = TransformationMatrix.PerspectiveProjection(del);
             comboBox1.Items.Add("Центральная");
             comboBox1.Items.Add("Аксонометрическая");
             comboBox1.SelectedItem = "Центральная"; 
@@ -420,6 +422,108 @@ namespace lab6
 
             return new Polyhedron(vertices, faces);
         }
+        public static Polyhedron CreateDodecahedr()
+        {
+            double phi = (1 + Math.Sqrt(5)) / 2;
+            double a = 1.0;
+
+            List<Point3D> vertices = new List<Point3D>
+            {
+                new Point3D( a,  a,  a), //0
+                new Point3D( a,  a, -a), //1
+                new Point3D( a, -a,  a), //2
+                new Point3D( a, -a, -a), //3
+                new Point3D(-a,  a,  a), //4
+                new Point3D(-a,  a, -a), //5
+                new Point3D(-a, -a,  a), //6
+                new Point3D(-a, -a, -a), //7
+                new Point3D( 0,  1/phi * a,  phi * a), //8
+                new Point3D( 0,  1/phi * a, -phi * a), //9
+                new Point3D( 0, -1/phi * a,  phi * a), //10
+                new Point3D( 0, -1/phi * a, -phi * a), //11
+                new Point3D( 1/phi * a,  phi * a,  0), //12
+                new Point3D(-1/phi * a,  phi * a,  0), //13
+                new Point3D( 1/phi * a, -phi * a,  0), //14
+                new Point3D(-1/phi * a, -phi * a,  0), //15
+                new Point3D( phi * a,  0,  1/phi * a), //16
+                new Point3D(-phi * a,  0,  1/phi * a), //17
+                new Point3D( phi * a,  0, -1/phi * a), //18
+                new Point3D(-phi * a,  0, -1/phi * a) //19
+            };
+
+            List<Face> faces = new List<Face>
+            {
+                new Face(new List<int> { 0, 8, 4, 13, 12 }),
+                new Face(new List<int> { 16, 18, 3, 14, 2 }),
+                new Face(new List<int> { 19, 5, 9, 11, 7 }),
+                new Face(new List<int> { 6, 10, 2, 14, 15 }),
+                new Face(new List<int> { 12, 13, 5, 9, 1 }),
+                new Face(new List<int> { 0, 8 ,10, 2, 16 }),
+                new Face(new List<int> { 13, 4, 17, 19, 5 }),
+                new Face(new List<int> { 18, 1, 9, 11, 3 }),
+                new Face(new List<int> { 0, 12, 1, 18, 16 }),
+                new Face(new List<int> { 19, 17, 6, 15, 7 }),
+                new Face(new List<int> { 3, 14, 15, 7, 11 }),
+                new Face(new List<int> { 8, 4, 17, 6, 10 }),
+            };
+
+            return new Polyhedron(vertices, faces);
+        }
+
+
+
+
+        public Polyhedron CreateOctahedron()
+        {
+            List<Point3D> vertices = new List<Point3D>();
+            List<Face> faces = new List<Face>();
+
+            double sideLength = 2.0;  
+            double halfSide = sideLength / 2.0;  
+
+            vertices.Add(new Point3D(halfSide, 0, 0));   
+            vertices.Add(new Point3D(-halfSide, 0, 0)); 
+            vertices.Add(new Point3D(0, halfSide, 0));   
+            vertices.Add(new Point3D(0, -halfSide, 0));
+            vertices.Add(new Point3D(0, 0, halfSide));   
+            vertices.Add(new Point3D(0, 0, -halfSide));  
+
+            
+            faces.Add(new Face(new List<int> { 0, 2, 4 }));
+            faces.Add(new Face(new List<int> { 0, 4, 3 }));
+            faces.Add(new Face(new List<int> { 0, 3, 5 }));
+            faces.Add(new Face(new List<int> { 0, 5, 2 }));
+
+            faces.Add(new Face(new List<int> { 1, 4, 2 }));
+            faces.Add(new Face(new List<int> { 1, 3, 4 }));
+            faces.Add(new Face(new List<int> { 1, 5, 3 }));
+            faces.Add(new Face(new List<int> { 1, 2, 5 }));
+
+            return new Polyhedron(vertices, faces);
+        }
+        public Polyhedron CreateTetrahedron()
+        {
+            List<Point3D> vertices = new List<Point3D>();
+            List<Face> faces = new List<Face>();
+
+            double sideLength = 1.0;  
+            double halfSide = sideLength / 2.0;  
+
+           
+            vertices.Add(new Point3D(halfSide, halfSide, halfSide));   
+            vertices.Add(new Point3D(-halfSide, -halfSide, halfSide)); 
+            vertices.Add(new Point3D(halfSide, -halfSide, -halfSide)); 
+            vertices.Add(new Point3D(-halfSide, halfSide, -halfSide)); 
+
+           
+            faces.Add(new Face(new List<int> { 0, 1, 2 })); 
+            faces.Add(new Face(new List<int> { 0, 2, 3 })); 
+            faces.Add(new Face(new List<int> { 0, 3, 1 })); 
+            faces.Add(new Face(new List<int> { 1, 2, 3 })); 
+
+            return new Polyhedron(vertices, faces);
+        }
+
 
         public PointF Project(Point3D point, TransformationMatrix projectionMatrix)
         {
@@ -653,7 +757,7 @@ namespace lab6
             switch (comboBox1.SelectedItem.ToString())
             {
                 case "Центральная":
-                    currentProjectionMatrix = TransformationMatrix.PerspectiveProjection(500);
+                    currentProjectionMatrix = TransformationMatrix.PerspectiveProjection(del);
                     IsPersp = true;
                     break;
                 case "Аксонометрическая":
